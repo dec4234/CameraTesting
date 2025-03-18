@@ -1,19 +1,22 @@
-from picamera import PiCamera
-from time import sleep
+from picamera2 import Picamera2
+import time
 
-# Initialize camera
-camera = PiCamera()
-camera.resolution = (3280, 2464)  # Max resolution for Pi Camera v2
+# Initialize the camera
+picam2 = Picamera2()
+picam2.configure(picam2.create_still_configuration())
+picam2.start()
 
-# Capture images in a loop
 try:
     while True:
-        camera.capture('/home/pi/image.jpg')
-        print("Image captured!")
-        sleep(0.5)  # 2 FPS (1 frame per 0.5s)
+        timestamp = time.strftime("%Y%m%d_%H%M%S")
+        filename = f"/home/pi/image_{timestamp}.jpg"
+        picam2.capture_file(filename)
+        print(f"Captured: {filename}")
+        time.sleep(0.5)  # 2 FPS
 
 except KeyboardInterrupt:
     print("\nStopping camera.")
 
 finally:
-    camera.close()
+    picam2.stop()
+    picam2.close()
